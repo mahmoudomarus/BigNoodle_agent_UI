@@ -152,6 +152,9 @@ const Img = ({ src, alt }: ImgProps) => {
   const [error, setError] = useState(false)
 
   if (!src) return null
+  
+  // Ensure src is a string for Next.js Image component
+  const imageSrc = typeof src === 'string' ? src : URL.createObjectURL(src as Blob);
 
   return (
     <div className="w-full max-w-xl">
@@ -168,7 +171,7 @@ const Img = ({ src, alt }: ImgProps) => {
         </div>
       ) : (
         <Image
-          src={src}
+          src={imageSrc}
           width={96}
           height={56}
           alt={alt ?? 'Rendered image'}
