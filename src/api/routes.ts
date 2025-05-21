@@ -19,5 +19,15 @@ export const APIRoutes = {
     agentId: string,
     sessionId: string
   ) =>
-    `${PlaygroundApiUrl}/v1/playground/agents/${agentId}/sessions/${sessionId}`
+    `${PlaygroundApiUrl}/v1/playground/agents/${agentId}/sessions/${sessionId}`,
+
+  // Deep Research endpoints
+  DeepResearch: (apiUrl: string) => 
+    `${apiUrl}/v1/research/deep-research`,
+  ResearchProgress: (apiUrl: string, sessionId: string) =>
+    `${apiUrl}/v1/research/progress/${sessionId}`,
+  ResearchProgressWebSocket: (apiUrl: string, sessionId: string) =>
+    `${apiUrl}/v1/research/ws/research-progress/${sessionId}`,
+  ActiveResearchSessions: (apiUrl: string) =>
+    `${apiUrl}/v1/research/active-sessions`
 }
