@@ -1,6 +1,6 @@
 import {
-  MistralLogo,
   OpenAILogo,
+  MistralLogo,
   GeminiLogo,
   AwsLogo,
   AzureLogo,
@@ -11,23 +11,19 @@ import {
   CohereLogo,
   OllamaLogo,
   XaiLogo,
-  AgnoIcon,
+  BigNoodleIcon,
   UserIcon,
   AgentIcon,
   SheetIcon,
   NextjsTag,
   ShadcnTag,
   TailwindTag,
-  AgnoTag,
+  BigNoodleTag,
   ReasoningIcon,
   ReferencesIcon
 } from './custom-icons'
 import { IconTypeMap } from './types'
 import {
-  RefreshCw,
-  Edit,
-  Save,
-  X,
   ArrowDown,
   SendIcon,
   Download,
@@ -35,9 +31,12 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  X,
+  RefreshCw,
+  Edit,
+  Save,
   Trash
 } from 'lucide-react'
-
 import { PlusIcon } from '@radix-ui/react-icons'
 
 export const ICONS: IconTypeMap = {
@@ -53,7 +52,7 @@ export const ICONS: IconTypeMap = {
   cohere: CohereLogo,
   ollama: OllamaLogo,
   xai: XaiLogo,
-  agno: AgnoIcon,
+  bignoodle: BigNoodleIcon,
   user: UserIcon,
   agent: AgentIcon,
   sheet: SheetIcon,
@@ -61,7 +60,7 @@ export const ICONS: IconTypeMap = {
   shadcn: ShadcnTag,
   tailwind: TailwindTag,
   reasoning: ReasoningIcon,
-  'agno-tag': AgnoTag,
+  'bignoodle-tag': BigNoodleTag,
   refresh: RefreshCw,
   edit: Edit,
   save: Save,
