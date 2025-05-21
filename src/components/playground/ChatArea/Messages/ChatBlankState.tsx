@@ -7,9 +7,9 @@ import { IconType } from '@/components/ui/icon/types'
 import React, { useState } from 'react'
 
 const EXTERNAL_LINKS = {
-  documentation: 'https://agno.link/agent-ui',
-  playground: 'https://app.agno.com/playground/agents',
-  agno: 'https://agno.com'
+  documentation: 'https://github.com/mahmoudomarus/BigNoodle_agent_UI',
+  playground: 'https://bignoodle-agent-ui.onrender.com',
+  agno: 'https://github.com/mahmoudomarus/BigNoodle_agent_UI'
 }
 
 const TECH_ICONS = [
@@ -127,7 +127,7 @@ const ChatBlankState = () => {
                 rel="noopener"
                 className="cursor-pointer"
               >
-                <Icon type="agno-tag" size="default" />
+                <Icon type="bignoodle-tag" size="default" />
               </Link>
             </span>
             <span className="flex items-center font-[600]">
