@@ -3,13 +3,11 @@ import { Button } from '@/components/ui/button'
 import { AgentSelector } from '@/components/playground/Sidebar/AgentSelector'
 import useChatActions from '@/hooks/useChatActions'
 import { usePlaygroundStore } from '@/store'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Icon from '@/components/ui/icon'
 import { getProviderIcon } from '@/lib/modelProvider'
 import Sessions from './Sessions'
-import { isValidUrl } from '@/lib/utils'
-import { toast } from 'sonner'
 import { useQueryState } from 'nuqs'
 import { truncateText } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -52,58 +50,18 @@ const ModelDisplay = ({ model }: { model: string }) => (
 const Endpoint = () => {
   const {
     selectedEndpoint,
-    isEndpointActive,
-    setSelectedEndpoint,
-    setAgents,
-    setSessionsData,
-    setMessages
+    isEndpointActive
   } = usePlaygroundStore()
   const { initializePlayground } = useChatActions()
-  const [isEditing, setIsEditing] = useState(false)
-  const [endpointValue, setEndpointValue] = useState('')
   const [isMounted, setIsMounted] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
   const [isRotating, setIsRotating] = useState(false)
-  const [, setAgentId] = useQueryState('agent')
-  const [, setSessionId] = useQueryState('session')
 
   useEffect(() => {
-    setEndpointValue(selectedEndpoint)
     setIsMounted(true)
   }, [selectedEndpoint])
 
   const getStatusColor = (isActive: boolean) =>
     isActive ? 'bg-positive' : 'bg-destructive'
-
-  const handleSave = async () => {
-    if (!isValidUrl(endpointValue)) {
-      toast.error('Please enter a valid URL')
-      return
-    }
-    const cleanEndpoint = endpointValue.replace(/\/$/, '').trim()
-    setSelectedEndpoint(cleanEndpoint)
-    setAgentId(null)
-    setSessionId(null)
-    setIsEditing(false)
-    setIsHovering(false)
-    setAgents([])
-    setSessionsData([])
-    setMessages([])
-  }
-
-  const handleCancel = () => {
-    setEndpointValue(selectedEndpoint)
-    setIsEditing(false)
-    setIsHovering(false)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSave()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
-  }
 
   const handleRefresh = async () => {
     setIsRotating(true)
