@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
+import progressReducer from './progressSlice';
 
 // Endpoint slice
 interface EndpointState {
@@ -49,6 +50,7 @@ const agentReducer = (state = initialAgentState) => {
 const rootReducer = combineReducers({
   endpoint: endpointReducer,
   agent: agentReducer,
+  progress: progressReducer
 });
 
 // Configure store

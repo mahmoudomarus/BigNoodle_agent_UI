@@ -1,82 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import { Cpu, FileText, Search, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { Progress } from "./Progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./Tooltip";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
-
-interface ProgressData {
-  id: string;
-  topic: string;
-  status: string;
-  completion_percentage: number;
-  current_stage: string;
-  searches_performed: {
-    timestamp: number;
-    query: string;
-    tool: string;
-    result_count: number;
-  }[];
-  tasks_created: {
-    timestamp: number;
-    task_id: string;
-    description: string;
-  }[];
-  tasks_completed: {
-    timestamp: number;
-    task_id: string;
-  }[];
-  sections_completed: {
-    timestamp: number;
-    section_name: string;
-  }[];
-  last_message: string;
-}
+import { fetchProgress } from "../../redux/progressSlice";
 
 export const ResearchComputer = ({ sessionId }: { sessionId: string }) => {
-  const [progressData, setProgressData] = useState<ProgressData | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [isPolling, setIsPolling] = useState(true);
+  const dispatch = useDispatch();
   const selectedEndpoint = useSelector((state: RootState) => state.endpoint.selectedEndpoint);
-
-  // Fetch progress data function
-  const fetchProgressData = async () => {
-    try {
-      const response = await axios.get(
-        `${selectedEndpoint}/v1/progress/${sessionId}`
-      );
-      setProgressData(response.data);
-      
-      // If research is completed, stop polling
-      if (response.data.status === "completed") {
-        setIsPolling(false);
-      }
-    } catch (err) {
-      console.error("Error fetching research progress:", err);
-      setError("Failed to fetch research progress");
-    }
-  };
+  const { data: progressData, loading, error, isPolling } = useSelector((state: RootState) => state.progress);
 
   // Set up polling
   useEffect(() => {
     if (!sessionId || !isPolling) return;
 
     // Initial fetch
-    fetchProgressData();
+    dispatch(fetchProgress({ sessionId, endpoint: selectedEndpoint }));
 
     // Set up interval for polling
-    const interval = setInterval(fetchProgressData, 5000); // Poll every 5 seconds
+    const interval = setInterval(() => {
+      dispatch(fetchProgress({ sessionId, endpoint: selectedEndpoint }));
+    }, 5000); // Poll every 5 seconds
 
     // Clean up interval on unmount
     return () => clearInterval(interval);
-  }, [sessionId, isPolling, selectedEndpoint]);
+  }, [sessionId, isPolling, selectedEndpoint, dispatch]);
 
-  // If no progress data and no error, show loading
-  if (!progressData && !error) {
+  // If no progress data and not loading, show loading
+  if (!progressData && !error && loading) {
     return (
       <div className="fixed bottom-8 right-8 bg-slate-800 p-4 rounded-lg shadow-lg text-white w-80 z-50">
         <div className="flex items-center justify-between mb-2">
@@ -129,6 +82,29 @@ export const ResearchComputer = ({ sessionId }: { sessionId: string }) => {
       >
         <Cpu size={20} className="text-indigo-400" />
       </button>
+    );
+  }
+
+  // If no progress data is available yet
+  if (!progressData) {
+    return (
+      <div className="fixed bottom-8 right-8 bg-slate-800 p-4 rounded-lg shadow-lg text-white w-80 z-50">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Cpu size={18} className="text-indigo-400" />
+            <h3 className="font-medium">Research Computer</h3>
+          </div>
+          <button 
+            onClick={() => setIsVisible(false)}
+            className="text-slate-400 hover:text-white"
+          >
+            ×
+          </button>
+        </div>
+        <div className="text-center py-4">
+          <p>Waiting for research to begin...</p>
+        </div>
+      </div>
     );
   }
 

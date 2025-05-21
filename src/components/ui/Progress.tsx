@@ -26,4 +26,6 @@ export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       </div>
     );
   }
-); 
+);
+
+Progress.displayName = "Progress"; 
