@@ -20,7 +20,11 @@ export const metadata: Metadata = {
   description:
     'A modern chat interface for AI agents built with Next.js, Tailwind CSS, and TypeScript. This template provides a ready-to-use UI for interacting with BigNoodle agents.',
   icons: {
-    icon: '/icon.png'
+    icon: {
+      url: '/icon.png',
+      type: 'image/png',
+      sizes: '84x50'
+    }
   }
 }
 

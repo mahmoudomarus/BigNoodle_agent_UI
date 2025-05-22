@@ -10,6 +10,7 @@ export const BigNoodleIcon = (props: React.SVGProps<SVGSVGElement> & {className?
       width={15}
       height={16}
       className={props.className}
+      style={{ objectFit: 'contain' }}
     />
   )
 }
