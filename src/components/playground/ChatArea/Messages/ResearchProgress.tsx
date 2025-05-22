@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { usePlaygroundStore } from '@/store';
 
-// Remove unused Icon import that was causing the build error
+// Define interface for the API response task format
+interface ApiTask {
+  id?: string;
+  name?: string;
+  description?: string;
+  status?: string;
+}
 
 interface ResearchProgressProps {
   sessionId: string;
@@ -70,7 +76,7 @@ export const ResearchProgress: React.FC<ResearchProgressProps> = ({
         
         // Transform tasks from API format if available
         if (data.tasks) {
-          const formattedTasks = data.tasks.map((task: any) => ({
+          const formattedTasks = data.tasks.map((task: ApiTask) => ({
             id: task.id || String(Math.random()),
             name: task.name || task.description || 'Research Task',
             status: task.status || 'pending'
