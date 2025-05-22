@@ -2,33 +2,39 @@
 
 import { usePlaygroundStore } from '@/store'
 import Messages from './Messages'
+import { ResearchProgress } from './Messages'
 import ScrollToBottom from '@/components/playground/ChatArea/ScrollToBottom'
 import { StickToBottom } from 'use-stick-to-bottom'
-import ResearchProgress from './Messages/ResearchProgress'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const MessageArea = () => {
   const { messages } = usePlaygroundStore()
   const [sessionId, setSessionId] = useState<string | null>(null)
   
-  // Extract session_id from agent messages for research tasks
+  // Extract session ID from messages that contain research results
   useEffect(() => {
-    const latestAgentMessage = [...messages]
-      .reverse()
-      .find(msg => msg.role === 'agent' && msg.content?.includes('session_id'));
-      
-    if (latestAgentMessage) {
+    if (!messages || messages.length === 0) return
+    
+    // Look for the session_id in the message content
+    const researchMessages = messages.filter(msg => 
+      msg.role === 'agent' && 
+      typeof msg.content === 'string' && 
+      msg.content.includes('session_id')
+    )
+    
+    if (researchMessages.length > 0) {
       try {
-        // Try to find session_id in the message content
-        const match = latestAgentMessage.content.match(/session_id["|']?:\s*["|']?([a-zA-Z0-9-]+)["|']?/);
+        // Try to extract the session_id from the message content
+        const lastMessage = researchMessages[researchMessages.length - 1].content
+        const match = /session_id["']?\s*:\s*["']([^"']+)["']/i.exec(lastMessage as string)
         if (match && match[1]) {
-          setSessionId(match[1]);
+          setSessionId(match[1])
         }
-      } catch (e) {
-        console.error('Error extracting session_id:', e);
+      } catch (error) {
+        console.error('Failed to parse session ID:', error)
       }
     }
-  }, [messages]);
+  }, [messages])
 
   return (
     <StickToBottom
