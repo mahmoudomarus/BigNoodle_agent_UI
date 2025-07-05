@@ -26,17 +26,23 @@ export function AgentSelector() {
 
   // Set the model when the component mounts if an agent is already selected
   useEffect(() => {
+    const deepResearchAgent = agents.find((agent) => agent.value === 'deep_research' || agent.value === 'deep_research_agent')
+    
     if (agentId && agents.length > 0) {
       const agent = agents.find((agent) => agent.value === agentId)
-      if (agent) {
+      if (agent && (agent.value === 'deep_research' || agent.value === 'deep_research_agent')) {
         setSelectedModel(agent.model.provider || '')
         setHasStorage(!!agent.storage)
         if (agent.model.provider) {
           focusChatInput()
         }
-      } else {
-        setAgentId(agents[0].value)
+      } else if (deepResearchAgent) {
+        // Auto-select deep research agent if current selection is invalid
+        setAgentId(deepResearchAgent.value)
       }
+    } else if (deepResearchAgent && !agentId) {
+      // Auto-select deep research agent if nothing is selected
+      setAgentId(deepResearchAgent.value)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agentId, agents, setSelectedModel])
@@ -63,19 +69,21 @@ export function AgentSelector() {
         <SelectValue placeholder="Select Agent" />
       </SelectTrigger>
       <SelectContent className="border-none bg-primaryAccent font-dmmono shadow-lg">
-        {agents.map((agent, index) => (
-          <SelectItem
-            className="cursor-pointer"
-            key={`${agent.value}-${index}`}
-            value={agent.value}
-          >
-            <div className="flex items-center gap-3 text-xs font-medium uppercase">
-              <Icon type={'agent'} size="xs" />
-              {agent.label}
-            </div>
-          </SelectItem>
-        ))}
-        {agents.length === 0 && (
+        {agents
+          .filter((agent) => agent.value === 'deep_research' || agent.value === 'deep_research_agent')
+          .map((agent, index) => (
+            <SelectItem
+              className="cursor-pointer"
+              key={`${agent.value}-${index}`}
+              value={agent.value}
+            >
+              <div className="flex items-center gap-3 text-xs font-medium uppercase">
+                <Icon type={'agent'} size="xs" />
+                {agent.label}
+              </div>
+            </SelectItem>
+          ))}
+        {agents.filter((agent) => agent.value === 'deep_research' || agent.value === 'deep_research_agent').length === 0 && (
           <SelectItem
             value="no-agents"
             className="cursor-not-allowed select-none text-center"
