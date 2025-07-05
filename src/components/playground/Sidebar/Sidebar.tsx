@@ -43,7 +43,7 @@ const ModelDisplay = ({ model }: { model: string }) => (
       const icon = getProviderIcon(model)
       return icon ? <Icon type={icon} className="shrink-0" size="xs" /> : null
     })()}
-    {model}
+    biggie
   </div>
 )
 
