@@ -27,8 +27,7 @@ import type {
   TableHeaderProps,
   TableBodyProps,
   TableRowProps,
-  TableCellProps,
-  PreparedTextProps
+  TableCellProps
 } from './types'
 
 import { HEADING_SIZES } from '../Heading/constants'
