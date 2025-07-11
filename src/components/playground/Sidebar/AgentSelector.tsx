@@ -72,17 +72,17 @@ export function AgentSelector() {
         {agents
           .filter((agent) => agent.value === 'deep_research' || agent.value === 'deep_research_agent')
           .map((agent, index) => (
-            <SelectItem
-              className="cursor-pointer"
-              key={`${agent.value}-${index}`}
-              value={agent.value}
-            >
-              <div className="flex items-center gap-3 text-xs font-medium uppercase">
-                <Icon type={'agent'} size="xs" />
-                {agent.label}
-              </div>
-            </SelectItem>
-          ))}
+          <SelectItem
+            className="cursor-pointer"
+            key={`${agent.value}-${index}`}
+            value={agent.value}
+          >
+            <div className="flex items-center gap-3 text-xs font-medium uppercase">
+              <Icon type={'agent'} size="xs" />
+              {agent.label}
+            </div>
+          </SelectItem>
+        ))}
         {agents.filter((agent) => agent.value === 'deep_research' || agent.value === 'deep_research_agent').length === 0 && (
           <SelectItem
             value="no-agents"
