@@ -1,11 +1,11 @@
 'use client'
 
 import { FC, useState } from 'react'
+import MermaidRenderer from './MermaidRenderer'
 
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import MermaidRenderer from './MermaidRenderer'
 
 import type {
   UnorderedListProps,
@@ -27,7 +27,8 @@ import type {
   TableHeaderProps,
   TableBodyProps,
   TableRowProps,
-  TableCellProps
+  TableCellProps,
+  PreparedTextProps
 } from './types'
 
 import { HEADING_SIZES } from '../Heading/constants'
@@ -118,35 +119,16 @@ const HorizontalRule = ({ className, ...props }: HorizontalRuleProps) => (
   />
 )
 
-const Code: FC<{ className?: string; children?: React.ReactNode }> = ({ className, children }) => {
-  // Extract language from className (e.g., "language-mermaid")
+const InlineCode: FC<PreparedTextProps> = ({ className, children, ...props }) => {
   const match = /language-(\w+)/.exec(className || '')
-  const language = match ? match[1] : ''
   
-  // If it's a mermaid code block, use MermaidRenderer
-  if (language === 'mermaid' && typeof children === 'string') {
-    return <MermaidRenderer chart={children} />
+  // Check if this is a Mermaid diagram
+  if (match && match[1] === 'mermaid') {
+    return <MermaidRenderer chart={String(children)} />
   }
   
-  // For other code blocks, use a proper code block component
-  if (language && language !== 'mermaid') {
-    return (
-      <div className="my-4 rounded-lg bg-gray-50 border">
-        <div className="px-3 py-2 text-xs text-gray-600 bg-gray-100 border-b">
-          {language}
-        </div>
-        <pre className="p-4 overflow-x-auto">
-          <code className="text-sm font-mono">
-            {children}
-          </code>
-        </pre>
-      </div>
-    )
-  }
-  
-  // For inline code, use the original styling
   return (
-    <code className="relative whitespace-pre-wrap rounded-sm bg-background-secondary/50 p-1">
+    <code className="relative whitespace-pre-wrap rounded-sm bg-background-secondary/50 p-1" {...props}>
       {children}
     </code>
   )
@@ -294,7 +276,7 @@ export const components = {
   del: DeletedText,
   hr: HorizontalRule,
   blockquote: Blockquote,
-  code: Code,
+  code: InlineCode,
   a: AnchorLink,
   img: Img,
   p: Paragraph,

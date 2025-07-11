@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { type MarkdownRendererProps } from './types'
 import { inlineComponents } from './inlineStyles'
 import { components } from './styles'
+import MermaidRenderer from './MermaidRenderer'
 
 const MarkdownRenderer: FC<MarkdownRendererProps> = ({
   children,
