@@ -11,7 +11,7 @@ import Icon from '@/components/ui/icon'
 const ChatInput = () => {
   const { chatInputRef } = usePlaygroundStore()
 
-  const { handleStreamingResponse } = useAIChatStreamHandler()
+  const { handleStreamResponse } = useAIChatStreamHandler()
   const [selectedAgent] = useQueryState('agent')
   const [inputMessage, setInputMessage] = useState('')
   const isStreaming = usePlaygroundStore((state) => state.isStreaming)
@@ -22,7 +22,7 @@ const ChatInput = () => {
     setInputMessage('')
 
     try {
-              await handleStreamingResponse(currentMessage)
+      await handleStreamResponse(currentMessage)
     } catch (error) {
       toast.error(
         `Error in handleSubmit: ${
