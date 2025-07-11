@@ -25,6 +25,7 @@ import type {
 } from './types'
 
 import { PARAGRAPH_SIZES } from '../Paragraph/constants'
+import MermaidRenderer from './MermaidRenderer'
 
 const filterProps = (props: object) => {
   const newProps = { ...props }
@@ -184,6 +185,45 @@ const Img = ({ src, alt }: ImgProps) => {
   )
 }
 
+interface CodeBlockProps {
+  className?: string;
+  children?: string;
+}
+
+interface CodeProps extends React.HTMLAttributes<HTMLPreElement> {
+  children?: React.ReactElement<CodeBlockProps>;
+}
+
+const Pre: React.FC<CodeProps> = ({ className, children, ...rest }) => {
+  // Check if this is a code block with language
+  if (
+    children &&
+    children.props &&
+    children.props.className &&
+    typeof children.props.className === 'string'
+  ) {
+    const language = children.props.className.replace('language-', '');
+    
+    // If it's a mermaid diagram
+    if (language === 'mermaid' && typeof children.props.children === 'string') {
+      return <MermaidRenderer chart={children.props.children} />;
+    }
+  }
+  
+  // Default code block rendering
+  return (
+    <pre
+      className={cn(
+        'overflow-x-auto rounded-md bg-background-secondary/50 p-4 text-sm',
+        className
+      )}
+      {...filterProps(rest)}
+    >
+      {children}
+    </pre>
+  );
+};
+
 export const inlineComponents = {
   h1: Heading1,
   h2: Heading2,
@@ -203,5 +243,6 @@ export const inlineComponents = {
   blockquote: Blockquote,
   a: AnchorLink,
   img: Img,
-  p: Paragraph
+  p: Paragraph,
+  pre: Pre
 }

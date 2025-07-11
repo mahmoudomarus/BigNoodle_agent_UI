@@ -1,7 +1,6 @@
 'use client'
 
 import { FC, useState } from 'react'
-import MermaidRenderer from './MermaidRenderer'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -33,6 +32,7 @@ import type {
 
 import { HEADING_SIZES } from '../Heading/constants'
 import { PARAGRAPH_SIZES } from '../Paragraph/constants'
+import MermaidRenderer from './MermaidRenderer'
 
 const filterProps = (props: object) => {
   const newProps = { ...props }
@@ -119,20 +119,52 @@ const HorizontalRule = ({ className, ...props }: HorizontalRuleProps) => (
   />
 )
 
-const InlineCode: FC<PreparedTextProps> = ({ className, children, ...props }) => {
-  const match = /language-(\w+)/.exec(className || '')
-  
-  // Check if this is a Mermaid diagram
-  if (match && match[1] === 'mermaid') {
-    return <MermaidRenderer chart={String(children)} />
-  }
-  
+const InlineCode: FC<PreparedTextProps> = ({ children }) => {
   return (
-    <code className="relative whitespace-pre-wrap rounded-sm bg-background-secondary/50 p-1" {...props}>
+    <code className="relative whitespace-pre-wrap rounded-sm bg-background-secondary/50 p-1">
       {children}
     </code>
   )
 }
+
+interface CodeBlockProps {
+  className?: string;
+  children?: string;
+}
+
+interface CodeProps extends React.HTMLAttributes<HTMLPreElement> {
+  children?: React.ReactElement<CodeBlockProps>;
+}
+
+const Pre: FC<CodeProps> = ({ className, children, ...rest }) => {
+  // Check if this is a code block with language
+  if (
+    children &&
+    children.props &&
+    children.props.className &&
+    typeof children.props.className === 'string'
+  ) {
+    const language = children.props.className.replace('language-', '');
+    
+    // If it's a mermaid diagram
+    if (language === 'mermaid' && typeof children.props.children === 'string') {
+      return <MermaidRenderer chart={children.props.children} />;
+    }
+  }
+  
+  // Default code block rendering
+  return (
+    <pre
+      className={cn(
+        'overflow-x-auto rounded-md bg-background-secondary/50 p-4 text-sm',
+        className
+      )}
+      {...filterProps(rest)}
+    >
+      {children}
+    </pre>
+  );
+};
 
 const Blockquote = ({ className, ...props }: BlockquoteProps) => (
   <blockquote
@@ -277,6 +309,7 @@ export const components = {
   hr: HorizontalRule,
   blockquote: Blockquote,
   code: InlineCode,
+  pre: Pre,
   a: AnchorLink,
   img: Img,
   p: Paragraph,
