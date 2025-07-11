@@ -1,6 +1,7 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC, useState, useEffect, useRef } from 'react'
+import mermaid from 'mermaid'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -32,7 +33,6 @@ import type {
 
 import { HEADING_SIZES } from '../Heading/constants'
 import { PARAGRAPH_SIZES } from '../Paragraph/constants'
-import MermaidRenderer from './MermaidRenderer'
 
 const filterProps = (props: object) => {
   const newProps = { ...props }
@@ -126,45 +126,6 @@ const InlineCode: FC<PreparedTextProps> = ({ children }) => {
     </code>
   )
 }
-
-interface CodeBlockProps {
-  className?: string;
-  children?: string;
-}
-
-interface CodeProps extends React.HTMLAttributes<HTMLPreElement> {
-  children?: React.ReactElement<CodeBlockProps>;
-}
-
-const Pre: FC<CodeProps> = ({ className, children, ...rest }) => {
-  // Check if this is a code block with language
-  if (
-    children &&
-    children.props &&
-    children.props.className &&
-    typeof children.props.className === 'string'
-  ) {
-    const language = children.props.className.replace('language-', '');
-    
-    // If it's a mermaid diagram
-    if (language === 'mermaid' && typeof children.props.children === 'string') {
-      return <MermaidRenderer chart={children.props.children} />;
-    }
-  }
-  
-  // Default code block rendering
-  return (
-    <pre
-      className={cn(
-        'overflow-x-auto rounded-md bg-background-secondary/50 p-4 text-sm',
-        className
-      )}
-      {...filterProps(rest)}
-    >
-      {children}
-    </pre>
-  );
-};
 
 const Blockquote = ({ className, ...props }: BlockquoteProps) => (
   <blockquote
@@ -291,6 +252,84 @@ const TableCell = ({ className, ...props }: TableCellProps) => (
   />
 )
 
+// Add Mermaid Chart component
+const MermaidChart: FC<{ children: string }> = ({ children }) => {
+  const [svg, setSvg] = useState<string>('')
+  const [error, setError] = useState<string>('')
+  const elementRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const renderMermaid = async () => {
+      try {
+        // Configure mermaid
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: 'default',
+          securityLevel: 'loose',
+          fontFamily: 'inherit',
+        })
+
+        // Generate unique ID for this chart
+        const id = `mermaid-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+        
+        // Render the chart
+        const { svg } = await mermaid.render(id, children.trim())
+        setSvg(svg)
+        setError('')
+      } catch (err) {
+        console.error('Mermaid rendering error:', err)
+        setError('Failed to render chart')
+      }
+    }
+
+    if (children.trim()) {
+      renderMermaid()
+    }
+  }, [children])
+
+  if (error) {
+    return (
+      <div className="w-full max-w-4xl p-4 border border-red-200 rounded-lg bg-red-50">
+        <p className="text-red-600 text-sm">Chart rendering error: {error}</p>
+        <pre className="mt-2 text-xs text-gray-600 overflow-auto">
+          {children}
+        </pre>
+      </div>
+    )
+  }
+
+  if (!svg) {
+    return (
+      <div className="w-full max-w-4xl p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <p className="text-gray-600 text-sm">Loading chart...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div 
+      ref={elementRef}
+      className="w-full max-w-4xl p-4 border border-gray-200 rounded-lg bg-white overflow-auto"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  )
+}
+
+// Update the Code component to handle mermaid
+const Code: FC<{ className?: string; children: string }> = ({ className, children }) => {
+  // Check if this is a mermaid code block
+  if (className?.includes('language-mermaid')) {
+    return <MermaidChart>{children}</MermaidChart>
+  }
+
+  // Regular code block
+  return (
+    <pre className="relative whitespace-pre-wrap rounded-md bg-background-secondary/50 p-4 text-sm">
+      <code className={className}>{children}</code>
+    </pre>
+  )
+}
+
 export const components = {
   h1: Heading1,
   h2: Heading2,
@@ -309,7 +348,7 @@ export const components = {
   hr: HorizontalRule,
   blockquote: Blockquote,
   code: InlineCode,
-  pre: Pre,
+  pre: Code,  // Add pre handler for code blocks
   a: AnchorLink,
   img: Img,
   p: Paragraph,

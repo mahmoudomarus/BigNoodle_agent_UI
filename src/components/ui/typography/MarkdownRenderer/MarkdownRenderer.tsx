@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils'
 import { type MarkdownRendererProps } from './types'
 import { inlineComponents } from './inlineStyles'
 import { components } from './styles'
-// MermaidRenderer is imported in styles.tsx where it's actually used
 
 const MarkdownRenderer: FC<MarkdownRendererProps> = ({
   children,
